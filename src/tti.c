@@ -138,17 +138,18 @@ void print_tree(const char *path, int depth) {
 		for (int j = 0; j < depth; j++)
 			printf("│\t");
 
-		char size_buf[32];
 		char time_buf[64];
-		format_size(e->st.st_size, size_buf, sizeof(size_buf));
 		format_time_ago(e->st.st_mtime, time_buf, sizeof(time_buf));
 
-		printf("├── %s\t[%s, %s]\n", e->name, size_buf, time_buf);
-
 		if (S_ISDIR(e->st.st_mode)) {
+			printf("├── %s --- %s\n", e->name, time_buf);
 			char subpath[4096];
 			snprintf(subpath, sizeof(subpath), "%s/%s", path, e->name);
 			print_tree(subpath, depth + 1);
+		} else {
+			char size_buf[32];
+			format_size(e->st.st_size, size_buf, sizeof(size_buf));
+			printf("├── %s --- %s, %s\n", e->name, size_buf, time_buf);
 		}
 	}
 }

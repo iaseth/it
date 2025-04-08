@@ -162,8 +162,16 @@ int main(int argc, char *argv[]) {
 	bool printed_any = false;
 
 	for (int i = 1; i < argc; i++) {
-		if (strcmp(argv[i], "--hidden") == 0) {
-			show_hidden = true;
+		if (argv[i][0] == '-' && argv[i][1] == '-') {
+			if (strcmp(argv[i], "--hidden") == 0) {
+				show_hidden = true;
+			} else {
+				printf("Flag not recognized: '%s'\n", argv[i]);
+				return 1;
+			}
+		} else if (argv[i][0] == '-') {
+			printf("Flag not recognized: '%s'\n", argv[i]);
+			return 1;
 		} else {
 			if (printed_any)
 				printf("\n");

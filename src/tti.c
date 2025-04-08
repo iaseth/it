@@ -8,6 +8,10 @@
 #include <stdbool.h>
 #include <ctype.h>
 
+#define MAX_ENTRIES_COUNT 2048
+
+
+
 const char *ignored_dirs[] = {
 	"node_modules", ".venv", ".git", "build", "target",
 	"__pycache__", "dist", "out", "bin", "obj", "coverage", ".cache"
@@ -102,10 +106,10 @@ void print_tree(const char *path, int depth) {
 	}
 
 	struct dirent *entry;
-	struct file_entry entries[1024];
+	struct file_entry entries[MAX_ENTRIES_COUNT];
 	int entry_count = 0;
 
-	while ((entry = readdir(dir)) != NULL) {
+	while ((entry = readdir(dir)) != NULL && entry_count < MAX_ENTRIES_COUNT) {
 		if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
 			continue;
 

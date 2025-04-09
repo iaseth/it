@@ -45,10 +45,19 @@ void print_tree(const char *path, int depth, bool show_hidden) {
 	}
 
 	struct dirent *entry;
-	struct file_entry entries[MAX_ENTRIES_COUNT];
+	int allocated_entry_count = count_entries_in_dir(dir);
+	allocated_entry_count = (allocated_entry_count > MAX_ENTRIES_COUNT) ? MAX_ENTRIES_COUNT : allocated_entry_count;
+
+	struct file_entry *entries = malloc(sizeof(struct file_entry) * allocated_entry_count);
+	if (!entries) {
+		perror("malloc");
+		closedir(dir);
+		return;
+	}
+
 	int entry_count = 0;
 
-	while ((entry = readdir(dir)) != NULL && entry_count < MAX_ENTRIES_COUNT) {
+	while ((entry = readdir(dir)) != NULL && entry_count < allocated_entry_count) {
 		if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
 			continue;
 
@@ -131,4 +140,6 @@ void print_tree(const char *path, int depth, bool show_hidden) {
 			printf("%s\n", text_buf);
 		}
 	}
+
+	free(entries);
 }

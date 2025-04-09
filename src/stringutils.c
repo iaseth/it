@@ -50,5 +50,5 @@ void append(char *dest, const char *format, ...) {
 }
 
 void append_attribute(char *text_buf, const char *attribute, int value) {
-	append(text_buf, ", %d %s", value, attribute);
+	if (value > 0) append(text_buf, ", %d %s", value, attribute);
 }

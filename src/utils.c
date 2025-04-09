@@ -58,3 +58,18 @@ int strcasecmp_ascii(const char *a, const char *b) {
 bool is_hidden(const char *name) {
 	return name[0] == '.';
 }
+
+
+int count_entries_in_dir(DIR *dir) {
+	struct dirent *entry;
+	int count = 0;
+
+	while ((entry = readdir(dir)) != NULL) {
+		if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
+			continue;
+		count++;
+	}
+
+	rewinddir(dir); // Reset directory stream for reuse
+	return count;
+}

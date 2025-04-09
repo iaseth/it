@@ -28,7 +28,7 @@ Requires CMake and a C compiler (GCC, Clang, etc.)
 ```bash
 git clone https://github.com/iaseth/it.git
 cd it
-mkdir build && cd build
+cd build
 cmake ..
 make
 ```

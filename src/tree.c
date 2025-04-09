@@ -78,6 +78,7 @@ void print_tree(const char *path, int depth, bool show_hidden) {
 	char subpath[4096];
 	char time_buf[64];
 	char size_buf[32];
+	char text_buf[512];
 	bool is_dir = false;
 	struct Analysis analysis;
 
@@ -95,34 +96,39 @@ void print_tree(const char *path, int depth, bool show_hidden) {
 			printf("├── " COLOR_BLUE "%s" COLOR_RESET " --- %s\n", e->name, time_buf);
 			print_tree(subpath, depth + 1, show_hidden);
 		} else {
+			text_buf[0] = '\0';
 			printf("├── %s --- %s", e->name, time_buf);
 			if (e->st.st_size > MAX_FILE_SIZE_FOR_ANALYSIS) {
 				format_size(e->st.st_size, size_buf, sizeof(size_buf));
-				printf(", %s", size_buf);
+				append(text_buf, ", %s", size_buf);
 			} else if (endswith(e->name, ".gitignore")) {
 				do_file_analysis(subpath, &analysis);
 				int non_empty_lines = analysis.lines - analysis.empty_lines;
 				int rules = non_empty_lines - analysis.hash_lines - analysis.bang_lines;
-				printf(", %d entries, %d overrides", rules, analysis.bang_lines);
+				append(text_buf, ", %d rules", rules);
+				append(text_buf, ", %d overrides", analysis.bang_lines);
 			} else if (endswith(e->name, ".c") || endswith(e->name, ".h")
 					|| endswith(e->name, ".cpp") || endswith(e->name, ".hpp")) {
 				do_file_analysis(subpath, &analysis);
-				printf(", %d hashlines, %d statements", analysis.hash_lines, analysis.end_semicolons);
+				append(text_buf, ", %d hashlines", analysis.hash_lines);
+				append(text_buf, ", %d blocks", analysis.closing_braces);
+				append(text_buf, ", %d statements", analysis.end_colons);
 			} else if (endswith(e->name, ".py")) {
 				do_file_analysis(subpath, &analysis);
-				printf(", %d blocks, %d defs", analysis.end_colons, analysis.python_defs);
+				append(text_buf, ", %d blocks", analysis.end_colons);
+				append(text_buf, ", %d defs", analysis.python_defs);
 			} else if (endswith(e->name, ".md")) {
 				do_file_analysis(subpath, &analysis);
-				printf(", %d headers", analysis.hash_lines);
+				append(text_buf, ", %d headers", analysis.hash_lines);
 			} else {
 				if (e->st.st_size == 0) {
 					snprintf(size_buf, sizeof(size_buf), "empty");
 				} else {
 					format_size(e->st.st_size, size_buf, sizeof(size_buf));
 				}
-				printf(", %s", size_buf);
+				append(text_buf, ", %s", size_buf);
 			}
-			printf("\n");
+			printf("%s\n", text_buf);
 		}
 	}
 }

@@ -1,5 +1,6 @@
 #include "stringutils.h"
 
+#include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 
@@ -31,4 +32,19 @@ bool endswith(const char *str, const char *suffix) {
 	size_t suffix_len = strlen(suffix);
 	if (suffix_len > str_len) return 0;
 	return strcmp(str + str_len - suffix_len, suffix) == 0;
+}
+
+// Appends formatted output to the end of an existing string buffer
+void append(char *dest, const char *format, ...) {
+	// Find the current length of the destination string
+	size_t len = strlen(dest);
+
+	// Start processing variable arguments
+	va_list args;
+	va_start(args, format);
+
+	// Append formatted output starting at the end of the current string
+	vsprintf(dest + len, format, args);
+
+	va_end(args);
 }

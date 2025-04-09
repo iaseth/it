@@ -11,6 +11,7 @@ void initialize_analysis_struct(struct Analysis *out) {
 	out->lines = 0;
 	out->empty_lines = 0;
 	out->hash_lines = 0;
+	out->bang_lines = 0;
 
 	out->opening_braces = 0;
 	out->closing_braces = 0;
@@ -59,6 +60,7 @@ int do_file_analysis(char *filepath, struct Analysis *out) {
 		else if (last == '{') out->opening_braces++;
 
 		if (first == '#') out->hash_lines++;
+		else if (first == '!') out->bang_lines++;
 		else if (first == '}') out->closing_braces++;
 	}
 

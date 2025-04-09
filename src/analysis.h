@@ -9,6 +9,7 @@ struct Analysis {
 	int lines;
 	int empty_lines;
 	int hash_lines;
+	int bang_lines;
 
 	int opening_braces;
 	int closing_braces;

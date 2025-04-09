@@ -99,6 +99,11 @@ void print_tree(const char *path, int depth, bool show_hidden) {
 			if (e->st.st_size > MAX_FILE_SIZE_FOR_ANALYSIS) {
 				format_size(e->st.st_size, size_buf, sizeof(size_buf));
 				printf(", %s", size_buf);
+			} else if (endswith(e->name, ".gitignore")) {
+				do_file_analysis(subpath, &analysis);
+				int non_empty_lines = analysis.lines - analysis.empty_lines;
+				int rules = non_empty_lines - analysis.hash_lines - analysis.bang_lines;
+				printf(", %d entries, %d overrides", rules, analysis.bang_lines);
 			} else if (endswith(e->name, ".c") || endswith(e->name, ".h")
 					|| endswith(e->name, ".cpp") || endswith(e->name, ".hpp")) {
 				do_file_analysis(subpath, &analysis);

@@ -5,7 +5,9 @@ set(CMAKE_C_STANDARD 99)
 
 add_executable(tti
 	src/tti.c
+	src/analysis.c
+	src/ignore.c
+	src/stringutils.c
 	src/tree.c
 	src/utils.c
-	src/ignore.c
 )

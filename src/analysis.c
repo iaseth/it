@@ -1,0 +1,56 @@
+#include "analysis.h"
+
+#include <stdio.h>
+#include <string.h>
+
+#include "stringutils.h"
+
+
+
+void initialize_analysis_struct(struct Analysis *out) {
+	out->lines = 0;
+}
+
+int analysis_file(char *filepath, struct Analysis *out) {
+	FILE *file = fopen(filepath, "r");
+	if (!file) {
+		perror("Error opening file");
+		return 1;
+	}
+
+	initialize_analysis_struct(out);
+	char line[LINE_SIZE];
+
+	while (fgets(line, sizeof(line), file)) {
+		out->lines++;
+		char *start = ltrim(line);
+		rtrim(start);
+
+		if (startswith(start, "import ") || startswith(start, "from ")) {
+			out->python_imports++;
+		} else if (startswith(start, "class ")) {
+			out->python_classes++;
+		} else if (startswith(start, "def ")) {
+			out->python_defs++;
+		}
+
+		size_t len = strlen(start);
+		if (len == 0) {
+			out->empty_lines++;
+			continue;
+		}
+
+		char first = start[0];
+		char last = start[len - 1];
+
+		if (last  == ':') out->end_colons++;
+		else if (last  == ';') out->end_semicolons++;
+		else if (last  == '{') out->opening_braces++;
+
+		if (first  == '#') out->hash_lines++;
+		else if (first  == '}') out->closing_braces++;
+	}
+
+	fclose(file);
+	return 0;
+}

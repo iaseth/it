@@ -1,11 +1,11 @@
 
-# 🌳 tree-that-ignores (`tti`)
+# 🌳 ignore-tree (`it`)
 
-`tti` is a fast and minimal CLI tool that prints a directory tree with file sizes and "last modified" timestamps — while ignoring common build and cache directories.
+`it` is a fast and minimal CLI tool that prints a directory tree with file sizes and "last modified" timestamps — while ignoring common build and cache directories.
 
 🧹 Hidden files and junk folders are skipped by default, so you can focus on the actual content.
 
-[![GitHub Repo](https://img.shields.io/badge/github-iaseth%2Ftree--that--ignores-blue?logo=github)](https://github.com/iaseth/tree-that-ignores)
+[![GitHub Repo](https://img.shields.io/badge/github-iaseth%2Fit-blue?logo=github)](https://github.com/iaseth/it)
 
 ---
 
@@ -26,23 +26,23 @@
 Requires CMake and a C compiler (GCC, Clang, etc.)
 
 ```bash
-git clone https://github.com/iaseth/tree-that-ignores.git
-cd tree-that-ignores
+git clone https://github.com/iaseth/it.git
+cd it
 mkdir build && cd build
 cmake ..
 make
 ```
 
-This creates the `tti` binary in `build/`.
+This creates the `it` binary in `build/`.
 
 ---
 
 ## 📦 Usage
 
 ```bash
-./tti                  # Tree of current dir (ignores hidden files/dirs)
-./tti src test         # Multiple paths
-./tti --hidden .       # Include hidden files and folders
+./it                  # Tree of current dir (ignores hidden files/dirs)
+./it src test         # Multiple paths
+./it --hidden .       # Include hidden files and folders
 ```
 
 ---
@@ -60,11 +60,23 @@ node_modules  .venv  .git  build  target  __pycache__  dist  out  bin  obj  cove
 ## 📂 Project Structure
 
 ```
-tree-that-ignores/
-├── src/
-│   └── tti.c
+it/
 ├── CMakeLists.txt
-└── README.md
+├── LICENSE.md
+├── README.md
+└── src
+    ├── analysis.c
+    ├── analysis.h
+    ├── ignore.c
+    ├── ignore.h
+    ├── main.c
+    ├── stringutils.c
+    ├── stringutils.h
+    ├── tree.c
+    ├── tree.h
+    ├── utils.c
+    └── utils.h
+
 ```
 
 ---

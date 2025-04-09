@@ -10,6 +10,9 @@
 
 #define MAX_ENTRIES_COUNT 2048
 
+#define COLOR_RESET  "\033[0m"
+#define COLOR_BLUE   "\033[1;34m"
+
 
 
 const char *ignored_dirs[] = {
@@ -146,13 +149,17 @@ void print_tree(const char *path, int depth) {
 		format_time_ago(e->st.st_mtime, time_buf, sizeof(time_buf));
 
 		if (S_ISDIR(e->st.st_mode)) {
-			printf("├── %s --- %s\n", e->name, time_buf);
+			printf("├── " COLOR_BLUE "%s" COLOR_RESET " --- %s\n", e->name, time_buf);
 			char subpath[4096];
 			snprintf(subpath, sizeof(subpath), "%s/%s", path, e->name);
 			print_tree(subpath, depth + 1);
 		} else {
 			char size_buf[32];
-			format_size(e->st.st_size, size_buf, sizeof(size_buf));
+			if (e->st.st_size == 0) {
+				snprintf(size_buf, sizeof(size_buf), "empty");
+			} else {
+				format_size(e->st.st_size, size_buf, sizeof(size_buf));
+			}
 			printf("├── %s --- %s, %s\n", e->name, size_buf, time_buf);
 		}
 	}

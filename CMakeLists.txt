@@ -4,7 +4,7 @@ project(tti C)
 set(CMAKE_C_STANDARD 99)
 
 add_executable(tti
-	src/tti.c
+	src/main.c
 	src/analysis.c
 	src/ignore.c
 	src/stringutils.c

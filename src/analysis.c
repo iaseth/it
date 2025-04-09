@@ -9,9 +9,20 @@
 
 void initialize_analysis_struct(struct Analysis *out) {
 	out->lines = 0;
+	out->empty_lines = 0;
+	out->hash_lines = 0;
+
+	out->opening_braces = 0;
+	out->closing_braces = 0;
+	out->end_colons = 0;
+	out->end_semicolons = 0;
+
+	out->python_imports = 0;
+	out->python_defs = 0;
+	out->python_classes = 0;
 }
 
-int analysis_file(char *filepath, struct Analysis *out) {
+int do_file_analysis(char *filepath, struct Analysis *out) {
 	FILE *file = fopen(filepath, "r");
 	if (!file) {
 		perror("Error opening file");

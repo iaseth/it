@@ -12,15 +12,15 @@ struct Analysis {
 
 	int opening_braces;
 	int closing_braces;
-	int end_semicolons;
 	int end_colons;
+	int end_semicolons;
 
+	int python_imports;
 	int python_defs;
 	int python_classes;
-	int python_imports;
 };
 
 void initialize_analysis_struct(struct Analysis *out);
-int analysis_file(char *filepath, struct Analysis *out);
+int do_file_analysis(char *filepath, struct Analysis *out);
 
 #endif

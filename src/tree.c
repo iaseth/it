@@ -1,9 +1,13 @@
+#include "tree.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
 #include <sys/stat.h>
-#include "tree.h"
+
+#include "analysis.h"
+#include "stringutils.h"
 #include "utils.h"
 #include "ignore.h"
 
@@ -13,6 +17,8 @@
 #define COLOR_BLUE   "\033[1;34m"
 
 
+
+const int MAX_FILE_SIZE_FOR_ANALYSIS = 32 * 1024; // 32 KB
 
 struct file_entry {
 	char name[256];
@@ -69,28 +75,49 @@ void print_tree(const char *path, int depth, bool show_hidden) {
 
 	qsort(entries, entry_count, sizeof(struct file_entry), compare_entries);
 
+	char subpath[4096];
+	char time_buf[64];
+	char size_buf[32];
+	bool is_dir = false;
+	struct Analysis analysis;
+
 	for (int i = 0; i < entry_count; i++) {
 		struct file_entry *e = &entries[i];
 
 		for (int j = 0; j < depth; j++)
 			printf("│\t");
 
-		char time_buf[64];
+		snprintf(subpath, sizeof(subpath), "%s/%s", path, e->name);
 		format_time_ago(e->st.st_mtime, time_buf, sizeof(time_buf));
+		is_dir = S_ISDIR(e->st.st_mode);
 
-		if (S_ISDIR(e->st.st_mode)) {
+		if (is_dir) {
 			printf("├── " COLOR_BLUE "%s" COLOR_RESET " --- %s\n", e->name, time_buf);
-			char subpath[4096];
-			snprintf(subpath, sizeof(subpath), "%s/%s", path, e->name);
 			print_tree(subpath, depth + 1, show_hidden);
 		} else {
-			char size_buf[32];
-			if (e->st.st_size == 0) {
-				snprintf(size_buf, sizeof(size_buf), "empty");
-			} else {
+			printf("├── %s --- %s", e->name, time_buf);
+			if (e->st.st_size > MAX_FILE_SIZE_FOR_ANALYSIS) {
 				format_size(e->st.st_size, size_buf, sizeof(size_buf));
+				printf(", %s", size_buf);
+			} else if (endswith(e->name, ".c") || endswith(e->name, ".h")
+					|| endswith(e->name, ".cpp") || endswith(e->name, ".hpp")) {
+				do_file_analysis(subpath, &analysis);
+				printf(", %d hashlines, %d statements", analysis.hash_lines, analysis.end_semicolons);
+			} else if (endswith(e->name, ".py")) {
+				do_file_analysis(subpath, &analysis);
+				printf(", %d blocks, %d defs", analysis.end_colons, analysis.python_defs);
+			} else if (endswith(e->name, ".md")) {
+				do_file_analysis(subpath, &analysis);
+				printf(", %d headers", analysis.hash_lines);
+			} else {
+				if (e->st.st_size == 0) {
+					snprintf(size_buf, sizeof(size_buf), "empty");
+				} else {
+					format_size(e->st.st_size, size_buf, sizeof(size_buf));
+				}
+				printf(", %s", size_buf);
 			}
-			printf("├── %s --- %s, %s\n", e->name, size_buf, time_buf);
+			printf("\n");
 		}
 	}
 }

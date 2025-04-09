@@ -8,27 +8,15 @@
 #include <stdbool.h>
 #include <ctype.h>
 
+#include "ignore.h"
+
 #define MAX_ENTRIES_COUNT 2048
 
 #define COLOR_RESET  "\033[0m"
 #define COLOR_BLUE   "\033[1;34m"
 
 
-
-const char *ignored_dirs[] = {
-	"node_modules", ".venv", ".git", "build", "target",
-	"__pycache__", "dist", "out", "bin", "obj", "coverage", ".cache"
-};
-const int num_ignored_dirs = sizeof(ignored_dirs) / sizeof(ignored_dirs[0]);
 bool show_hidden = false;
-
-bool should_ignore(const char *name) {
-	for (int i = 0; i < num_ignored_dirs; i++) {
-		if (strcmp(name, ignored_dirs[i]) == 0)
-			return true;
-	}
-	return false;
-}
 
 bool is_hidden(const char *name) {
 	return name[0] == '.';

@@ -10,7 +10,10 @@ struct Analysis {
 	int empty_lines;
 	int hash_lines;
 	int bang_lines;
-	int double_slash_lines;
+
+	int double_slash_comments;
+	int slash_star_comments;
+	int xml_tags;
 
 	int opening_braces;
 	int closing_braces;

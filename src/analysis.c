@@ -12,7 +12,10 @@ void initialize_analysis_struct(struct Analysis *out) {
 	out->empty_lines = 0;
 	out->hash_lines = 0;
 	out->bang_lines = 0;
-	out->double_slash_lines = 0;
+
+	out->double_slash_comments = 0;
+	out->slash_star_comments = 0;
+	out->xml_tags = 0;
 
 	out->opening_braces = 0;
 	out->closing_braces = 0;
@@ -46,7 +49,11 @@ int do_file_analysis(char *filepath, struct Analysis *out) {
 		} else if (startswith(start, "def ")) {
 			out->python_defs++;
 		} else if (startswith(start, "//")) {
-			out->double_slash_lines++;
+			out->double_slash_comments++;
+		} else if (startswith(start, "/*")) {
+			out->slash_star_comments++;
+		} else if (startswith(start, "<") || endswith(start, ">")) {
+			out->xml_tags++;
 		}
 
 		size_t len = strlen(start);

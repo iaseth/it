@@ -122,11 +122,19 @@ void print_tree(const char *path, int depth, bool show_hidden) {
 				append_attribute(text_buf, "hashlines", analysis.hash_lines);
 				append_attribute(text_buf, "blocks", analysis.closing_braces);
 				append_attribute(text_buf, "statements", analysis.end_colons);
+			} else if (endswith(e->name, ".css") || endswith(e->name, ".scss")) {
+				do_file_analysis(subpath, &analysis);
+				append_attribute(text_buf, "blocks", analysis.closing_braces);
+				append_attribute(text_buf, "styles", analysis.end_colons);
+				append_attribute(text_buf, "comments", analysis.double_slash_comments);
+			} else if (endswith(e->name, ".html") || endswith(e->name, ".xhtml") || endswith(e->name, ".xml")) {
+				do_file_analysis(subpath, &analysis);
+				append_attribute(text_buf, "tags", analysis.xml_tags);
 			} else if (endswith(e->name, ".js") || endswith(e->name, ".ts")) {
 				do_file_analysis(subpath, &analysis);
 				append_attribute(text_buf, "blocks", analysis.closing_braces);
 				append_attribute(text_buf, "statements", analysis.end_colons);
-				append_attribute(text_buf, "comments", analysis.double_slash_lines);
+				append_attribute(text_buf, "comments", analysis.double_slash_comments);
 			} else if (endswith(e->name, ".py")) {
 				do_file_analysis(subpath, &analysis);
 				append_attribute(text_buf, "blocks", analysis.end_colons);

@@ -3,5 +3,9 @@ project(tti C)
 
 set(CMAKE_C_STANDARD 99)
 
-# Set source file
-add_executable(tti src/tti.c)
+add_executable(tti
+	src/tti.c
+	src/tree.c
+	src/utils.c
+	src/ignore.c
+)

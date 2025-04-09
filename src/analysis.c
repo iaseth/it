@@ -12,6 +12,7 @@ void initialize_analysis_struct(struct Analysis *out) {
 	out->empty_lines = 0;
 	out->hash_lines = 0;
 	out->bang_lines = 0;
+	out->double_slash_lines = 0;
 
 	out->opening_braces = 0;
 	out->closing_braces = 0;
@@ -44,6 +45,8 @@ int do_file_analysis(char *filepath, struct Analysis *out) {
 			out->python_classes++;
 		} else if (startswith(start, "def ")) {
 			out->python_defs++;
+		} else if (startswith(start, "//")) {
+			out->double_slash_lines++;
 		}
 
 		size_t len = strlen(start);

@@ -122,6 +122,11 @@ void print_tree(const char *path, int depth, bool show_hidden) {
 				append_attribute(text_buf, "hashlines", analysis.hash_lines);
 				append_attribute(text_buf, "blocks", analysis.closing_braces);
 				append_attribute(text_buf, "statements", analysis.end_colons);
+			} else if (endswith(e->name, ".js") || endswith(e->name, ".ts")) {
+				do_file_analysis(subpath, &analysis);
+				append_attribute(text_buf, "blocks", analysis.closing_braces);
+				append_attribute(text_buf, "statements", analysis.end_colons);
+				append_attribute(text_buf, "comments", analysis.double_slash_lines);
 			} else if (endswith(e->name, ".py")) {
 				do_file_analysis(subpath, &analysis);
 				append_attribute(text_buf, "blocks", analysis.end_colons);
@@ -129,6 +134,9 @@ void print_tree(const char *path, int depth, bool show_hidden) {
 			} else if (endswith(e->name, ".md")) {
 				do_file_analysis(subpath, &analysis);
 				append_attribute(text_buf, "headers", analysis.hash_lines);
+			} else if (endswith(e->name, ".txt")) {
+				do_file_analysis(subpath, &analysis);
+				append_attribute(text_buf, "lines", analysis.lines);
 			} else {
 				if (e->st.st_size == 0) {
 					snprintf(size_buf, sizeof(size_buf), "empty");

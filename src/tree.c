@@ -105,21 +105,21 @@ void print_tree(const char *path, int depth, bool show_hidden) {
 				do_file_analysis(subpath, &analysis);
 				int non_empty_lines = analysis.lines - analysis.empty_lines;
 				int rules = non_empty_lines - analysis.hash_lines - analysis.bang_lines;
-				append(text_buf, ", %d rules", rules);
-				append(text_buf, ", %d overrides", analysis.bang_lines);
+				append_attribute(text_buf, "rules", rules);
+				append_attribute(text_buf, "overrides", analysis.bang_lines);
 			} else if (endswith(e->name, ".c") || endswith(e->name, ".h")
 					|| endswith(e->name, ".cpp") || endswith(e->name, ".hpp")) {
 				do_file_analysis(subpath, &analysis);
-				append(text_buf, ", %d hashlines", analysis.hash_lines);
-				append(text_buf, ", %d blocks", analysis.closing_braces);
-				append(text_buf, ", %d statements", analysis.end_colons);
+				append_attribute(text_buf, "hashlines", analysis.hash_lines);
+				append_attribute(text_buf, "blocks", analysis.closing_braces);
+				append_attribute(text_buf, "statements", analysis.end_colons);
 			} else if (endswith(e->name, ".py")) {
 				do_file_analysis(subpath, &analysis);
-				append(text_buf, ", %d blocks", analysis.end_colons);
-				append(text_buf, ", %d defs", analysis.python_defs);
+				append_attribute(text_buf, "blocks", analysis.end_colons);
+				append_attribute(text_buf, "defs", analysis.python_defs);
 			} else if (endswith(e->name, ".md")) {
 				do_file_analysis(subpath, &analysis);
-				append(text_buf, ", %d headers", analysis.hash_lines);
+				append_attribute(text_buf, "headers", analysis.hash_lines);
 			} else {
 				if (e->st.st_size == 0) {
 					snprintf(size_buf, sizeof(size_buf), "empty");

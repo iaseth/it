@@ -48,3 +48,7 @@ void append(char *dest, const char *format, ...) {
 
 	va_end(args);
 }
+
+void append_attribute(char *text_buf, const char *attribute, int value) {
+	append(text_buf, ", %d %s", value, attribute);
+}

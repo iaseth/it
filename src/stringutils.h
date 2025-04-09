@@ -13,5 +13,6 @@ bool startswith(const char *str, const char *prefix);
 bool endswith(const char *str, const char *suffix);
 
 void append(char *dest, const char *format, ...);
+void append_attribute(char *dest, const char *attribute, int value);
 
 #endif

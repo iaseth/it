@@ -54,12 +54,12 @@ int do_file_analysis(char *filepath, struct Analysis *out) {
 		char first = start[0];
 		char last = start[len - 1];
 
-		if (last  == ':') out->end_colons++;
-		else if (last  == ';') out->end_semicolons++;
-		else if (last  == '{') out->opening_braces++;
+		if (last == ':') out->end_colons++;
+		else if (last == ';') out->end_semicolons++;
+		else if (last == '{') out->opening_braces++;
 
-		if (first  == '#') out->hash_lines++;
-		else if (first  == '}') out->closing_braces++;
+		if (first == '#') out->hash_lines++;
+		else if (first == '}') out->closing_braces++;
 	}
 
 	fclose(file);

@@ -9,21 +9,20 @@
 
 int main(int argc, char *argv[]) {
 	struct Args args;
+	args.show_hidden = false;
+	args.show_simple = false;
 	bool printed_any = false;
 
 	for (int i = 1; i < argc; i++) {
-		if (argv[i][0] == '-' && argv[i][1] == '-') {
-			if (strcmp(argv[i], "--hidden") == 0) {
+		if (argv[i][0] == '-') {
+			if (isarg(argv[i], "--hidden", "-h")) {
 				args.show_hidden = true;
-			} else if (strcmp(argv[i], "--simple") == 0) {
+			} else if (isarg(argv[i], "--simple", "-s")) {
 				args.show_simple = true;
 			} else {
 				printf("Flag not recognized: '%s'\n", argv[i]);
 				return 1;
 			}
-		} else if (argv[i][0] == '-') {
-			printf("Flag not recognized: '%s'\n", argv[i]);
-			return 1;
 		} else {
 			if (printed_any)
 				printf("\n");

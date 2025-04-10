@@ -5,6 +5,7 @@ set(CMAKE_C_STANDARD 99)
 
 add_executable(it
 	src/main.c
+	src/args.c
 	src/analysis.c
 	src/ignore.c
 	src/stringutils.c

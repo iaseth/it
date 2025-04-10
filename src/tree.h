@@ -14,8 +14,9 @@ struct file_entry {
 	struct stat st;
 };
 
-int compare_entries(const void *a, const void *b);
+bool is_code_file(const char *filename);
 void add_file_attributes(char *subpath, struct file_entry *entry, char *text_buf);
+int compare_entries(const void *a, const void *b);
 void print_tree(const char *path, int depth, struct Args *args);
 
 #endif

@@ -16,18 +16,41 @@
 
 
 
-const int MAX_FILE_SIZE_FOR_ANALYSIS = 32 * 1024; // 32 KB
+const int MAX_FILE_SIZE_FOR_ANALYSIS = 64 * 1024; // 64 KB
 
-int compare_entries(const void *a, const void *b) {
-	struct file_entry *ea = (struct file_entry *)a;
-	struct file_entry *eb = (struct file_entry *)b;
-	int is_dir_a = S_ISDIR(ea->st.st_mode);
-	int is_dir_b = S_ISDIR(eb->st.st_mode);
+// List of recognized code file extensions
+const char *RECOGNIZED_FILE_TYPES[] = {
+	".c", ".cpp", ".h", ".hpp", ".py", ".java", ".js", ".ts", ".cs",
+	".rb", ".go", ".swift", ".php", ".rs", ".kt", ".m", ".scala",
+	".css", ".html", ".xhtml", ".xml",
+	".md", ".txt"
+};
 
-	if (is_dir_a != is_dir_b)
-		return is_dir_b - is_dir_a; // dirs first
+const char *RECOGNIZED_FILE_NAMES[] = {
+	"README", "LICENSE"
+};
 
-	return strcasecmp_ascii(ea->name, eb->name);
+bool is_code_file(const char *filename) {
+	size_t names_count = sizeof(RECOGNIZED_FILE_NAMES) / sizeof(RECOGNIZED_FILE_NAMES[0]);
+	for (size_t i = 0; i < names_count; i++) {
+		if (strcmp(filename, RECOGNIZED_FILE_NAMES[i]) == 0) {
+			return true;
+		}
+	}
+
+	const char *dot = strrchr(filename, '.'); // Find the last dot in the filename
+	if (!dot || dot == filename) {
+		return false; // No extension found
+	}
+
+	size_t types_count = sizeof(RECOGNIZED_FILE_TYPES) / sizeof(RECOGNIZED_FILE_TYPES[0]);
+	for (size_t i = 0; i < types_count; i++) {
+		if (strcmp(dot, RECOGNIZED_FILE_TYPES[i]) == 0) {
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void add_file_attributes(char *subpath, struct file_entry *entry, char *text_buf) {
@@ -73,6 +96,18 @@ void add_file_attributes(char *subpath, struct file_entry *entry, char *text_buf
 		}
 		append(text_buf, ", %s", size_buf);
 	}
+}
+
+int compare_entries(const void *a, const void *b) {
+	struct file_entry *ea = (struct file_entry *)a;
+	struct file_entry *eb = (struct file_entry *)b;
+	int is_dir_a = S_ISDIR(ea->st.st_mode);
+	int is_dir_b = S_ISDIR(eb->st.st_mode);
+
+	if (is_dir_a != is_dir_b)
+		return is_dir_b - is_dir_a; // dirs first
+
+	return strcasecmp_ascii(ea->name, eb->name);
 }
 
 void print_tree(const char *path, int depth, struct Args *args) {
@@ -144,11 +179,12 @@ void print_tree(const char *path, int depth, struct Args *args) {
 		} else {
 			text_buf[0] = '\0';
 			printf("├── %s --- %s", e->name, time_buf);
-			if (e->st.st_size > MAX_FILE_SIZE_FOR_ANALYSIS || args->show_simple) {
+			bool do_analysis = (!args->show_simple) && (e->st.st_size < MAX_FILE_SIZE_FOR_ANALYSIS) && is_code_file(e->name);
+			if (do_analysis) {
+				add_file_attributes(subpath, e, text_buf);
+			} else {
 				format_size(e->st.st_size, size_buf, sizeof(size_buf));
 				append(text_buf, ", %s", size_buf);
-			} else {
-				add_file_attributes(subpath, e, text_buf);
 			}
 			printf("%s\n", text_buf);
 		}

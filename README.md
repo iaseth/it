@@ -64,19 +64,22 @@ node_modules  .venv  .git  build  target  __pycache__  dist  out  bin  obj  cove
 
 ```
 it/
-├── src --- 19 hours ago
-│   ├── analysis.c --- 4 hours ago, 4 hashlines, 11 blocks
-│   ├── analysis.h --- 4 hours ago, 4 hashlines, 1 blocks
-│   ├── ignore.c --- 22 hours ago, 3 hashlines, 3 blocks
-│   ├── ignore.h --- 22 hours ago, 3 hashlines
-│   ├── main.c --- 5 minutes ago, 4 hashlines, 9 blocks
-│   ├── stringutils.c --- 6 hours ago, 4 hashlines, 7 blocks
-│   ├── stringutils.h --- 6 hours ago, 5 hashlines
-│   ├── tree.c --- 4 minutes ago, 11 hashlines, 22 blocks
-│   ├── tree.h --- 5 minutes ago, 6 hashlines, 1 blocks
-│   ├── utils.c --- 5 hours ago, 4 hashlines, 15 blocks
-│   ├── utils.h --- 5 hours ago, 7 hashlines
-├── CMakeLists.txt --- 10 hours ago, 13 lines
+├── src --- 11 minutes ago
+│   ├── analysis.c --- 5 hours ago, 4 hashlines, 11 blocks
+│   ├── analysis.h --- 5 hours ago, 4 hashlines, 1 blocks
+│   ├── args.c --- 7 minutes ago, 2 hashlines, 2 blocks
+│   ├── args.h --- 8 minutes ago, 4 hashlines, 1 blocks
+│   ├── ignore.c --- 23 hours ago, 3 hashlines, 3 blocks
+│   ├── ignore.h --- 23 hours ago, 3 hashlines
+│   ├── main.c --- 5 minutes ago, 5 hashlines, 8 blocks
+│   ├── stringutils.c --- 7 hours ago, 4 hashlines, 7 blocks, 8 comments
+│   ├── stringutils.h --- 7 hours ago, 5 hashlines
+│   ├── tree.c --- 19 minutes ago, 11 hashlines, 22 blocks
+│   ├── tree.h --- 18 minutes ago, 7 hashlines, 1 blocks
+│   ├── utils.c --- 6 hours ago, 4 hashlines, 15 blocks, 1 comments
+│   ├── utils.h --- 6 hours ago, 7 hashlines
+├── .gitignore --- 8 hours ago, 1 rules
+├── CMakeLists.txt --- 7 minutes ago, 14 lines
 ├── LICENSE.md --- 1 day ago
 ├── README.md --- just now, 7 headers
 ├── reddit.md --- 8 hours ago, 1 headers
@@ -91,4 +94,3 @@ MIT License — feel free to use, modify, and share.
 ---
 
 Made with C for speed ⚡ by [Ankur Seth](https://github.com/iaseth)
-```

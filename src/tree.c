@@ -44,18 +44,18 @@ void add_file_attributes(char *subpath, struct file_entry *entry, char *text_buf
 			|| endswith(filename, ".cpp") || endswith(filename, ".hpp")) {
 		append_attribute(text_buf, "hashlines", analysis.hash_lines);
 		append_attribute(text_buf, "blocks", analysis.closing_braces);
-		append_attribute(text_buf, "statements", analysis.end_colons);
+		append_attribute(text_buf, "statements", analysis.end_semicolons);
 		append_attribute(text_buf, "comments", analysis.double_slash_comments + analysis.slash_star_comments);
 	} else if (endswith(filename, ".css") || endswith(filename, ".scss")) {
 		append_attribute(text_buf, "blocks", analysis.closing_braces);
-		append_attribute(text_buf, "styles", analysis.end_colons);
+		append_attribute(text_buf, "styles", analysis.end_semicolons);
 		append_attribute(text_buf, "comments", analysis.double_slash_comments);
 	} else if (endswith(filename, ".html") || endswith(filename, ".xhtml")
 			|| endswith(filename, ".xml") || endswith(filename, ".php")) {
 		append_attribute(text_buf, "tags", analysis.xml_tags);
 	} else if (endswith(filename, ".js") || endswith(filename, ".ts")) {
 		append_attribute(text_buf, "blocks", analysis.closing_braces);
-		append_attribute(text_buf, "statements", analysis.end_colons);
+		append_attribute(text_buf, "statements", analysis.end_semicolons);
 		append_attribute(text_buf, "comments", analysis.double_slash_comments);
 	} else if (endswith(filename, ".py")) {
 		append_attribute(text_buf, "blocks", analysis.end_colons);

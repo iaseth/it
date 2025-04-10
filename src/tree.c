@@ -3,8 +3,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <dirent.h>
-#include <sys/stat.h>
 
 #include "analysis.h"
 #include "stringutils.h"
@@ -20,11 +18,6 @@
 
 const int MAX_FILE_SIZE_FOR_ANALYSIS = 32 * 1024; // 32 KB
 
-struct file_entry {
-	char name[256];
-	struct stat st;
-};
-
 int compare_entries(const void *a, const void *b) {
 	struct file_entry *ea = (struct file_entry *)a;
 	struct file_entry *eb = (struct file_entry *)b;
@@ -37,7 +30,50 @@ int compare_entries(const void *a, const void *b) {
 	return strcasecmp_ascii(ea->name, eb->name);
 }
 
-void print_tree(const char *path, int depth, bool show_hidden) {
+void add_file_attributes(char *subpath, struct file_entry *entry, char *text_buf) {
+	char *filename = entry->name;
+	struct Analysis analysis;
+	do_file_analysis(subpath, &analysis);
+
+	if (endswith(filename, ".gitignore")) {
+		int non_empty_lines = analysis.lines - analysis.empty_lines;
+		int rules = non_empty_lines - analysis.hash_lines - analysis.bang_lines;
+		append_attribute(text_buf, "rules", rules);
+		append_attribute(text_buf, "overrides", analysis.bang_lines);
+	} else if (endswith(filename, ".c") || endswith(filename, ".h")
+			|| endswith(filename, ".cpp") || endswith(filename, ".hpp")) {
+		append_attribute(text_buf, "hashlines", analysis.hash_lines);
+		append_attribute(text_buf, "blocks", analysis.closing_braces);
+		append_attribute(text_buf, "statements", analysis.end_colons);
+	} else if (endswith(filename, ".css") || endswith(filename, ".scss")) {
+		append_attribute(text_buf, "blocks", analysis.closing_braces);
+		append_attribute(text_buf, "styles", analysis.end_colons);
+		append_attribute(text_buf, "comments", analysis.double_slash_comments);
+	} else if (endswith(filename, ".html") || endswith(filename, ".xhtml") || endswith(filename, ".xml")) {
+		append_attribute(text_buf, "tags", analysis.xml_tags);
+	} else if (endswith(filename, ".js") || endswith(filename, ".ts")) {
+		append_attribute(text_buf, "blocks", analysis.closing_braces);
+		append_attribute(text_buf, "statements", analysis.end_colons);
+		append_attribute(text_buf, "comments", analysis.double_slash_comments);
+	} else if (endswith(filename, ".py")) {
+		append_attribute(text_buf, "blocks", analysis.end_colons);
+		append_attribute(text_buf, "defs", analysis.python_defs);
+	} else if (endswith(filename, ".md")) {
+		append_attribute(text_buf, "headers", analysis.hash_lines);
+	} else if (endswith(filename, ".txt")) {
+		append_attribute(text_buf, "lines", analysis.lines);
+	} else {
+		char size_buf[32];
+		if (entry->st.st_size == 0) {
+			snprintf(size_buf, sizeof(size_buf), "empty");
+		} else {
+			format_size(entry->st.st_size, size_buf, sizeof(size_buf));
+		}
+		append(text_buf, ", %s", size_buf);
+	}
+}
+
+void print_tree(const char *path, int depth, bool show_hidden, bool show_simple) {
 	DIR *dir = opendir(path);
 	if (!dir) {
 		perror("opendir");
@@ -89,7 +125,6 @@ void print_tree(const char *path, int depth, bool show_hidden) {
 	char size_buf[32];
 	char text_buf[512];
 	bool is_dir = false;
-	struct Analysis analysis;
 
 	for (int i = 0; i < entry_count; i++) {
 		struct file_entry *e = &entries[i];
@@ -103,55 +138,15 @@ void print_tree(const char *path, int depth, bool show_hidden) {
 
 		if (is_dir) {
 			printf("├── " COLOR_BLUE "%s" COLOR_RESET " --- %s\n", e->name, time_buf);
-			print_tree(subpath, depth + 1, show_hidden);
+			print_tree(subpath, depth + 1, show_hidden, show_simple);
 		} else {
 			text_buf[0] = '\0';
 			printf("├── %s --- %s", e->name, time_buf);
-			if (e->st.st_size > MAX_FILE_SIZE_FOR_ANALYSIS) {
+			if (e->st.st_size > MAX_FILE_SIZE_FOR_ANALYSIS || show_simple) {
 				format_size(e->st.st_size, size_buf, sizeof(size_buf));
 				append(text_buf, ", %s", size_buf);
-			} else if (endswith(e->name, ".gitignore")) {
-				do_file_analysis(subpath, &analysis);
-				int non_empty_lines = analysis.lines - analysis.empty_lines;
-				int rules = non_empty_lines - analysis.hash_lines - analysis.bang_lines;
-				append_attribute(text_buf, "rules", rules);
-				append_attribute(text_buf, "overrides", analysis.bang_lines);
-			} else if (endswith(e->name, ".c") || endswith(e->name, ".h")
-					|| endswith(e->name, ".cpp") || endswith(e->name, ".hpp")) {
-				do_file_analysis(subpath, &analysis);
-				append_attribute(text_buf, "hashlines", analysis.hash_lines);
-				append_attribute(text_buf, "blocks", analysis.closing_braces);
-				append_attribute(text_buf, "statements", analysis.end_colons);
-			} else if (endswith(e->name, ".css") || endswith(e->name, ".scss")) {
-				do_file_analysis(subpath, &analysis);
-				append_attribute(text_buf, "blocks", analysis.closing_braces);
-				append_attribute(text_buf, "styles", analysis.end_colons);
-				append_attribute(text_buf, "comments", analysis.double_slash_comments);
-			} else if (endswith(e->name, ".html") || endswith(e->name, ".xhtml") || endswith(e->name, ".xml")) {
-				do_file_analysis(subpath, &analysis);
-				append_attribute(text_buf, "tags", analysis.xml_tags);
-			} else if (endswith(e->name, ".js") || endswith(e->name, ".ts")) {
-				do_file_analysis(subpath, &analysis);
-				append_attribute(text_buf, "blocks", analysis.closing_braces);
-				append_attribute(text_buf, "statements", analysis.end_colons);
-				append_attribute(text_buf, "comments", analysis.double_slash_comments);
-			} else if (endswith(e->name, ".py")) {
-				do_file_analysis(subpath, &analysis);
-				append_attribute(text_buf, "blocks", analysis.end_colons);
-				append_attribute(text_buf, "defs", analysis.python_defs);
-			} else if (endswith(e->name, ".md")) {
-				do_file_analysis(subpath, &analysis);
-				append_attribute(text_buf, "headers", analysis.hash_lines);
-			} else if (endswith(e->name, ".txt")) {
-				do_file_analysis(subpath, &analysis);
-				append_attribute(text_buf, "lines", analysis.lines);
 			} else {
-				if (e->st.st_size == 0) {
-					snprintf(size_buf, sizeof(size_buf), "empty");
-				} else {
-					format_size(e->st.st_size, size_buf, sizeof(size_buf));
-				}
-				append(text_buf, ", %s", size_buf);
+				add_file_attributes(subpath, e, text_buf);
 			}
 			printf("%s\n", text_buf);
 		}

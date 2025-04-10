@@ -45,11 +45,13 @@ void add_file_attributes(char *subpath, struct file_entry *entry, char *text_buf
 		append_attribute(text_buf, "hashlines", analysis.hash_lines);
 		append_attribute(text_buf, "blocks", analysis.closing_braces);
 		append_attribute(text_buf, "statements", analysis.end_colons);
+		append_attribute(text_buf, "comments", analysis.double_slash_comments + analysis.slash_star_comments);
 	} else if (endswith(filename, ".css") || endswith(filename, ".scss")) {
 		append_attribute(text_buf, "blocks", analysis.closing_braces);
 		append_attribute(text_buf, "styles", analysis.end_colons);
 		append_attribute(text_buf, "comments", analysis.double_slash_comments);
-	} else if (endswith(filename, ".html") || endswith(filename, ".xhtml") || endswith(filename, ".xml")) {
+	} else if (endswith(filename, ".html") || endswith(filename, ".xhtml")
+			|| endswith(filename, ".xml") || endswith(filename, ".php")) {
 		append_attribute(text_buf, "tags", analysis.xml_tags);
 	} else if (endswith(filename, ".js") || endswith(filename, ".ts")) {
 		append_attribute(text_buf, "blocks", analysis.closing_braces);
@@ -73,7 +75,7 @@ void add_file_attributes(char *subpath, struct file_entry *entry, char *text_buf
 	}
 }
 
-void print_tree(const char *path, int depth, bool show_hidden, bool show_simple) {
+void print_tree(const char *path, int depth, struct Args *args) {
 	DIR *dir = opendir(path);
 	if (!dir) {
 		perror("opendir");
@@ -97,7 +99,7 @@ void print_tree(const char *path, int depth, bool show_hidden, bool show_simple)
 		if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
 			continue;
 
-		if (!show_hidden && is_hidden(entry->d_name))
+		if (!args->show_hidden && is_hidden(entry->d_name))
 			continue;
 
 		if (should_ignore(entry->d_name))
@@ -138,11 +140,11 @@ void print_tree(const char *path, int depth, bool show_hidden, bool show_simple)
 
 		if (is_dir) {
 			printf("├── " COLOR_BLUE "%s" COLOR_RESET " --- %s\n", e->name, time_buf);
-			print_tree(subpath, depth + 1, show_hidden, show_simple);
+			print_tree(subpath, depth + 1, args);
 		} else {
 			text_buf[0] = '\0';
 			printf("├── %s --- %s", e->name, time_buf);
-			if (e->st.st_size > MAX_FILE_SIZE_FOR_ANALYSIS || show_simple) {
+			if (e->st.st_size > MAX_FILE_SIZE_FOR_ANALYSIS || args->show_simple) {
 				format_size(e->st.st_size, size_buf, sizeof(size_buf));
 				append(text_buf, ", %s", size_buf);
 			} else {

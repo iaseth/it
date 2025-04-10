@@ -5,6 +5,9 @@
 #include <sys/stat.h>
 #include <stdbool.h>
 
+#include "args.h"
+
+
 
 struct file_entry {
 	char name[256];
@@ -13,6 +16,6 @@ struct file_entry {
 
 int compare_entries(const void *a, const void *b);
 void add_file_attributes(char *subpath, struct file_entry *entry, char *text_buf);
-void print_tree(const char *path, int depth, bool show_hidden, bool show_simple);
+void print_tree(const char *path, int depth, struct Args *args);
 
 #endif

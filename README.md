@@ -1,7 +1,7 @@
 
 # 🌳 ignore-tree (`it`)
 
-`it` is a fast and minimal CLI tool that prints a directory tree with file sizes and "last modified" timestamps — while ignoring common build and cache directories.
+`it` is a fast and minimal CLI tool that prints a directory tree with file sizes, last modified and other details — while ignoring common build and cache directories.
 
 🧹 Hidden files and junk folders are skipped by default, so you can focus on the actual content.
 
@@ -12,11 +12,13 @@
 ## 🚀 Features
 
 - 📁 **Folders before files**, sorted alphabetically
-- 🕒 **"Last modified"** shown as `3 days ago`, `15 minutes ago`, etc.
+- 🕒 **Last modified** shown as `3 days ago`, `15 minutes ago`, etc.
 - 📦 **File sizes** shown in human-readable units
+- 🧩 **Extra details** shown for recognized file types
 - 🔥 Ignores junk dirs like: `node_modules`, `.git`, `__pycache__`, `build/`, `dist/`, etc.
 - 🫣 Hidden files are **not shown by default**
-- 🎛 Use `--hidden` to include dotfiles/folders
+- 🎛 Use `--hidden` to **include** dotfiles/folders
+- 🧩 Use `--simple` to **not show** extra details
 - 🧵 Supports **multiple paths**
 
 ---
@@ -43,6 +45,7 @@ This creates the `it` binary in `build/`.
 ./it                  # Tree of current dir (ignores hidden files/dirs)
 ./it src test         # Multiple paths
 ./it --hidden .       # Include hidden files and folders
+./it --simple .       # Dot't show extra attibutes
 ```
 
 ---
@@ -61,21 +64,22 @@ node_modules  .venv  .git  build  target  __pycache__  dist  out  bin  obj  cove
 
 ```
 it/
-├── src --- 8 hours ago
-│   ├── analysis.c --- 7 hours ago, 4 hashlines, 33 statements
-│   ├── analysis.h --- 7 hours ago, 4 hashlines, 13 statements
-│   ├── ignore.c --- 12 hours ago, 3 hashlines, 4 statements
-│   ├── ignore.h --- 12 hours ago, 3 hashlines, 1 statements
-│   ├── main.c --- 12 hours ago, 4 hashlines, 14 statements
-│   ├── stringutils.c --- 8 hours ago, 3 hashlines, 10 statements
-│   ├── stringutils.h --- 8 hours ago, 4 hashlines, 4 statements
-│   ├── tree.c --- 7 hours ago, 13 hashlines, 52 statements
-│   ├── tree.h --- 12 hours ago, 4 hashlines, 1 statements
-│   ├── utils.c --- 12 hours ago, 4 hashlines, 27 statements
-│   ├── utils.h --- 12 hours ago, 6 hashlines, 4 statements
-├── CMakeLists.txt --- 8 minutes ago, 184.0 B
-├── LICENSE.md --- 1 day ago, 0 headers
-├── README.md --- 4 minutes ago, 7 headers
+├── src --- 19 hours ago
+│   ├── analysis.c --- 4 hours ago, 4 hashlines, 11 blocks
+│   ├── analysis.h --- 4 hours ago, 4 hashlines, 1 blocks
+│   ├── ignore.c --- 22 hours ago, 3 hashlines, 3 blocks
+│   ├── ignore.h --- 22 hours ago, 3 hashlines
+│   ├── main.c --- 5 minutes ago, 4 hashlines, 9 blocks
+│   ├── stringutils.c --- 6 hours ago, 4 hashlines, 7 blocks
+│   ├── stringutils.h --- 6 hours ago, 5 hashlines
+│   ├── tree.c --- 4 minutes ago, 11 hashlines, 22 blocks
+│   ├── tree.h --- 5 minutes ago, 6 hashlines, 1 blocks
+│   ├── utils.c --- 5 hours ago, 4 hashlines, 15 blocks
+│   ├── utils.h --- 5 hours ago, 7 hashlines
+├── CMakeLists.txt --- 10 hours ago, 13 lines
+├── LICENSE.md --- 1 day ago
+├── README.md --- just now, 7 headers
+├── reddit.md --- 8 hours ago, 1 headers
 ```
 
 ---
